@@ -3,11 +3,11 @@ oprs = ["+","-","*","/"]
 Matrix = None
 
 def isfloat(value):
-  try:
-    float(value)
-    return True
-  except ValueError:
-    return False
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 def matrix():
     f = open("./spreadsheet.txt","r")
@@ -17,11 +17,9 @@ def matrix():
     global Matrix
     Matrix = [[0 for x in range(columnLen)] for x in range(rowLen)] 
 
-    lineNumber = 0
-    for line in f:
-        row, column =  divmod (lineNumber, columnLen)
+    for idx, line in enumerate(f):
+        row, column =  divmod (idx, columnLen)
         Matrix[row][column] = line.strip()
-        lineNumber+=1
         print((row), (column), Matrix[row][column])
 
 def getValue(operand):
@@ -31,9 +29,8 @@ def getValue(operand):
         row = ord(operand[0]) - ord('A')
         column = int(operand[1:])-1
         expression = Matrix[row][column]
-        #print("expression",expression)
         return calculator(expression)
-        
+
 
 def calculator(expression):
     tokens = expression.split(" ");
@@ -42,51 +39,33 @@ def calculator(expression):
 
     stack = list()
     result = 0
-    for i in tokens:
-        if i in oprs:
+    for idx, token in enumerate(tokens):
+        if token in oprs:
             right = stack.pop()
             left = stack.pop()
-            if(i=="+"):
+            if(token=="+"):
                 result = getValue(left) + getValue(right)
-            if(i=="-"):
+            if(token=="-"):
                 result = getValue(left) - getValue(right)
-            if(i=='*'):
+            if(token=='*'):
                 result = getValue(left) * getValue(right)
-            if(i=="/"):
+            if(token=="/"):
                 result = getValue(left) / getValue(right)
-            stack.append(str(result))
+            if(idx<(len(tokens)-1)):
+                stack.append(str(result))
         else:
-            stack.append(i)
-
+            stack.append(token)
     if(len(stack)==0):
-       return result
+        return result
     else:
-      return expression
-            
-
-def RPN (expression):
-    tokens = expression.split(" ")
-    stack = list()
-    result = 0
-    for i in tokens:
-        if i in oprs:
-            right = stack.pop()
-            left = stack.pop()
-            if(i=="+"):
-                result = left + right
-            if(i=="-"):
-                result = left - right
-            if(i=='*'):
-                result = left * right
-            if(i=="/"):
-                result = left / right
-            stack.append(result)
-        else:
-            stack.append(float(i))
-    return result
+        return stack
 
 
 matrix()
 print(calculator ('3 2'))
 print(calculator ('A2'))
-
+print(calculator ('4 5 *'))
+print(calculator ('A1'))
+print(calculator ('A1 B2 / 2 +'))
+print(calculator ('3'))
+print(calculator ('39 B1 B2 * /'))
