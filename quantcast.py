@@ -1,4 +1,3 @@
-
 oprs = ["+","-","*","/"]
 Matrix = None
 
@@ -22,20 +21,17 @@ def matrix():
         Matrix[row][column] = line.strip()
         print((row), (column), Matrix[row][column])
 
-def getValue(operand):
-    if(isfloat(operand)):
-        return float(operand)
-    else:
-        row = ord(operand[0]) - ord('A')
-        column = int(operand[1:])-1
-        expression = Matrix[row][column]
-        return calculator(expression)
-
-
 def calculator(expression):
     tokens = expression.split(" ");
     if(len(tokens)==1):
-        return getValue(tokens[0])
+        if(isfloat(expression)):
+            return float(expression)
+        else:
+            row = ord(expression[0]) - ord('A')
+            column = int(expression[1:])-1
+            newExpression = Matrix[row][column]
+            return calculator(newExpression)
+
 
     stack = list()
     result = 0
@@ -44,13 +40,13 @@ def calculator(expression):
             right = stack.pop()
             left = stack.pop()
             if(token=="+"):
-                result = getValue(left) + getValue(right)
+                result = calculator(left) + calculator(right)
             if(token=="-"):
-                result = getValue(left) - getValue(right)
+                result = calculator(left) - calculator(right)
             if(token=='*'):
-                result = getValue(left) * getValue(right)
+                result = calculator(left) * calculator(right)
             if(token=="/"):
-                result = getValue(left) / getValue(right)
+                result = calculator(left) / calculator(right)
             if(idx<(len(tokens)-1)):
                 stack.append(str(result))
         else:
